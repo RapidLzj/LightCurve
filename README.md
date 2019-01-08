@@ -16,9 +16,9 @@ finally it can provide a light curve.
 
 Install packages by pip or conda, or other package management command
 
++ numpy
 + astropy
 + photutils
-+ numpy
 + matplotlib
 
 ## Steps
@@ -39,6 +39,10 @@ Correct science fits with the given merged bias and flat files.
 
 Use SExtractor or photutils package to detect sources and evaluate their flux.
 
+### Alignment of images
+
+Find pointing offset between images, compared with the specified image.
+
 ### Differential flux calibration
 
 Differential Calibrate the flux of target (giving x & y) with reference stars (also x & y).
@@ -54,35 +58,36 @@ Plotting the light curve
 ```python
 import lzj_lightcurve as lc
 
-raw_path = 'raw/'  # path for raw files
-out_path = 'red/'  # path for output files
-bias_lst = 'bias.lst'  # list file name of bias files
-bias_fits = 'bias.fits'  # merged bias file name
-flat_lst = 'flat.lst'  # list file name of flat files
-flat_fits = 'flat.fits'  # merged flat file name
-sci_lst = 'sci.lst'  # list file name of scientific fits files
-sci_corr_suffix = 'corr'  # suffix added to corrected fits files
-catalog_suffix = 'cat'  # output catalog suffix
-diff_file = 'diff_result.cat.txt'  # the output differential calibration flux (mag) file name
-curve_fig = 'diff.png'  # differential light curve figure (pdf/eps/png)
+# initial variables
+raw_path        = 'raw/'       # path for raw files
+out_path        = 'red/'       # path for output files
+bias_lst        = 'bias.lst'   # list file name of bias files
+bias_fits       = 'bias.fits'  # merged bias file name
+flat_lst        = 'flat.lst'   # list file name of flat files
+flat_fits       = 'flat.fits'  # merged flat file name
+sci_lst         = 'sci.lst'    # list file name of scientific fits files
+sci_corr_suffix = 'corr'       # suffix added to corrected fits files
+catalog_suffix  = 'cat'        # output catalog suffix
+diff_file       = 'diff.txt'   # the output differential calibration flux (mag) file name
+curve_fig       = 'diff.png'   # differential light curve figure (pdf/eps/png)
 ```
 
 ### Bias and flat merging
 
 ```python
 lc.mergebias(
-    raw_path,  # path of raw files
-    out_path,  # path of out files
-    bias_lst,  # list file of bias fits files
-    bias_fits, # merged bias fits files
+    raw_path,    # path of raw files
+    out_path,    # path of out files
+    bias_lst,    # list file of bias fits files
+    bias_fits,   # merged bias fits files
 )
 
 lc.mergeflat(
-    raw_path,  # path of raw files
-    out_path,  # path of out files
-    flat_lst, 
-    bias_fits, # merged bias fits files
-    flat_fits, # merged flat fits files
+    raw_path,    # path of raw files
+    out_path,    # path of out files
+    flat_lst,    # list file of flat fits files
+    bias_fits,   # merged bias fits files
+    flat_fits,   # merged flat fits files
 )
 ```
 
@@ -90,11 +95,11 @@ lc.mergeflat(
 
 ```python
 lc.corr(
-    raw_path,  # path of raw files
-    out_path,  # path of out files
-    sci_lst,   # list file of scientific fits files
-    bias_fits, # merged flat fits files
-    flat_fits, # merged flat fits files
+    raw_path,         # path of raw files
+    out_path,         # path of out files
+    sci_lst,          # list file of scientific fits files
+    bias_fits,        # merged flat fits files
+    flat_fits,        # merged flat fits files
     sci_corr_suffix,  # suffix of corrected files
 )
 ```
@@ -103,10 +108,21 @@ lc.corr(
 
 ```python
 lc.phot(
-    out_path,  # path of out files
-    sci_lst,   # list file of scientific fits files
+    out_path,          # path of out files
+    sci_lst,           # list file of scientific fits files
     sci_corr_suffix,   # suffix of corrected files
     catalog_suffix,    # suffix of catalog files
+)
+```
+
+### Alignment
+
+```python
+offset = lc.align(
+    out_path,        # path of out files
+    sci_lst,         # list file of scientific fits files
+    catalog_suffix,  # suffix of corrected files
+    ref_img_id,      # reference image id, default is 0
 )
 ```
 
@@ -114,13 +130,14 @@ lc.phot(
 
 ```python
 lc.cali(
-    out_path,  # path of out files
-    sci_lst,   # list file of scientific fits files
-    catalog_suffix,   # suffix of catalog files
-    (x, y),  # x/y coordination of target star
+    out_path,        # path of out files
+    sci_lst,         # list file of scientific fits files
+    catalog_suffix,  # suffix of catalog files
+    (x, y),          # x/y coordination of target star
     [(x1, y1), (x2, y2), ...],  # list of x/y coordinations of reference stars
-    (xc, yc),   # x/y coordination of check star
-    diff_file,  # the output differential calibration flux (mag) file name 
+    (xc, yc),        # x/y coordination of check star
+    diff_file,       # the output differential calibration flux (mag) file name 
+    offset,          # offset between iamges
 )
 ```
 
@@ -128,7 +145,7 @@ lc.cali(
 
 ```python
 lc.curve(
-    outpath,  # path of out files
+    outpath,    # path of out files
     diff_file,  # the output differential calibration flux (mag) file name
     curve_fig,  # differential light curve figure (pdf/eps/png)
 )
