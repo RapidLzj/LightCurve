@@ -26,28 +26,39 @@ Install packages by pip or conda, or other package management command
 ### Bias mergeing
 
 A list of bias files should be provided, and then a merged bias fits file will be generated.
+A median function is used to evaluated the bias of each pixel.
 
 ### Flat mergeing
 
 A list of flat files and the merged bias fits file should be provided, and then a merged flat fits file will be generated.
+We normalize each flat image with its median, and then use the median function to merge the flat.
 
 ### Science image correction
 
 Correct science fits with the given merged bias and flat files.
+For each pixel, bias is substracted, and then the flat if divided.
 
 ### Source detection and flux extraction
 
 Use SExtractor or photutils package to detect sources and evaluate their flux.
+Stars with $5-\sigma$ over background are detected and their flux measured with aperture photometry with 3-FWHM diameter.
 
 ### Alignment of images
 
 Find pointing offset between images, compared with the specified image.
+A big enough initial offset tolerance will be used in matching stars between images.
+And then the tolerance will be shrinked, until the error is lower enough for target identifying.
 
 ### Differential flux calibration
 
 Differential Calibrate the flux of target (giving x & y) with reference stars (also x & y).
 
-Output a Differential flux report
+A global flux offset between each image and the reference image is measured, 
+using the 3 sigma clipped median of offsets of all matched stars.
+A local flux offset is also measured by the given refernce stars.
+
+Then the flux changing of the target star by the two offsets are both extracted.
+Finally the differential flux report is generated.
 
 ### Plotting
 
@@ -55,9 +66,21 @@ Plotting the light curve
 
 ## Usage
 
+### Prepare file lists
+
+Use `ls` or other approachs to create a fits file list.
+Each line in the list is a filename, without path.
+The common part of path will be provided with a parameter.
+
+### Import the package
+
 ```python
 import lzj_lightcurve as lc
+```
 
+### Prepare necessary variables, or use the values later directly
+
+```python
 # initial variables
 raw_path        = 'raw/'       # path for raw files
 out_path        = 'red/'       # path for output files
@@ -81,7 +104,9 @@ lc.mergebias(
     bias_lst,    # list file of bias fits files
     bias_fits,   # merged bias fits files
 )
+```
 
+```python
 lc.mergeflat(
     raw_path,    # path of raw files
     out_path,    # path of out files
