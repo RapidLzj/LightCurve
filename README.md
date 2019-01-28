@@ -23,15 +23,15 @@ Install packages by pip or conda, or other package management command
 
 ## Steps
 
-### Bias mergeing
+### Bias combine
 
 A list of bias files should be provided, and then a merged bias fits file will be generated.
 
-### Flat mergeing
+### Flat combine
 
 A list of flat files and the merged bias fits file should be provided, and then a merged flat fits file will be generated.
 
-### Science image correction
+### Science image processing
 
 Correct science fits with the given merged bias and flat files.
 
@@ -70,14 +70,14 @@ curve_fig = 'diff.png'  # differential light curve figure (pdf/eps/png)
 ### Bias and flat merging
 
 ```python
-lc.mergebias(
+lc.biascomb(
     raw_path,  # path of raw files
     out_path,  # path of out files
     bias_lst,  # list file of bias fits files
     bias_fits, # merged bias fits files
 )
 
-lc.mergeflat(
+lc.flatcomb(
     raw_path,  # path of raw files
     out_path,  # path of out files
     flat_lst, 
@@ -89,7 +89,7 @@ lc.mergeflat(
 ### Correct scientific images
 
 ```python
-lc.corr(
+lc.imgproc(
     raw_path,  # path of raw files
     out_path,  # path of out files
     sci_lst,   # list file of scientific fits files
@@ -113,7 +113,7 @@ lc.phot(
 ### Differential calibration
 
 ```python
-lc.cali(
+lc.diffcali(
     out_path,  # path of out files
     sci_lst,   # list file of scientific fits files
     catalog_suffix,   # suffix of catalog files
